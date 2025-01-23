@@ -48,15 +48,23 @@ public class CapellaParser {
 
             System.out.println("Elements where should encrypt: ");
             for (Element element : elementsWhereShouldEncrypt) {
-                System.out.println(" - "  + element.getTagName() + " (" + element.getAttribute("id") + ")");
+                printElement(element);
             }
             System.out.println("-------------------------------------------------");
             System.out.println("Elements where should decrypt: ");
             for (Element element : elementsWhereShouldDecrypt) {
-                System.out.println(" - "  + element.getTagName() + " (" + element.getAttribute("id") + ")");
+                printElement(element);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static void printElement(Element element) {
+        String name = element.getAttribute("name");
+        String id = element.getAttribute("id");
+        String summary = element.getAttribute("summary");
+
+        System.out.println(" - "  + element.getTagName() + " with name \""+ name + "\" and id \"" + id +"\" (" + summary + ")");
     }
 }
