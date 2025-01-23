@@ -1,91 +1,59 @@
 package tech.laanaoui.capella;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.w3c.dom.*;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import java.io.File;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CapellaParser {
 
     public static void main(String[] args) {
-        // Example usage
-        String filePath = "Communication.capella"; // Change to the actual file path
-        JSONObject result = parseCapellaFileToJson(filePath);
-        System.out.println(result.toString(2));
-    }
-
-    /**
-     * Parse the Capella file and return JSON structure.
-     * Parent object is "ownedModelRoots". We skip the usual XML tags.
-     */
-    public static JSONObject parseCapellaFileToJson(String filePath) {
-        JSONObject result = new JSONObject();
         try {
-            File xmlFile = new File(filePath);
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document doc = builder.parse(xmlFile);
+            // Parse the XML file
+            File inputFile = new File("Communication.capella");
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(inputFile);
             doc.getDocumentElement().normalize();
 
-            // Find the 'ownedModelRoots' node
-            NodeList nodeList = doc.getElementsByTagName("ownedModelRoots");
-            if (nodeList.getLength() > 0) {
-                // Build JSON from first 'ownedModelRoots' node
-                result = buildJsonFromNode(nodeList.item(0));
+            // TAGS CONTAINING "summary" ATTRIBUTE
+            List<String> SUMMARIES_TO_ENCRYPT =  List.of("create, confidentiality=c1", "create, confidentiality=c2",
+                    "create, confidentiality=c3","confidentiality=c3", "confidentiality=c1, type=fixed, cyph=c1",
+                    "confidentiality=c2, type=fixed, cyph=c1,c2");
+            List<String> SUMMARIES_TO_DECRYPT =  List.of("no_cipher c=lowest", "");
+
+            // for each element in the XML file, if the tag has an attribute summary with the value "toto" or "c1" show the entier tag with all its attributes
+            NodeList elements = doc.getElementsByTagName("*");
+            List<Element> elementsWhereShouldEncrypt= new ArrayList<>();
+            List<Element> elementsWhereShouldDecrypt= new ArrayList<>();
+
+            for (int i = 0; i < elements.getLength(); i++) {
+                Element element = (Element) elements.item(i);
+                if (element.hasAttribute("summary")
+                        && (SUMMARIES_TO_DECRYPT.contains(element.getAttribute("summary").toLowerCase()))) {
+                    elementsWhereShouldDecrypt.add(element);
+                }
+                if (element.hasAttribute("summary")
+                        && (SUMMARIES_TO_ENCRYPT.contains(element.getAttribute("summary").toLowerCase()))) {
+                    elementsWhereShouldEncrypt.add(element);
+                }
+            }
+
+            System.out.println("Elements where should encrypt: ");
+            for (Element element : elementsWhereShouldEncrypt) {
+                System.out.println(" - "  + element.getTagName() + " (" + element.getAttribute("id") + ")");
+            }
+            System.out.println("-------------------------------------------------");
+            System.out.println("Elements where should decrypt: ");
+            for (Element element : elementsWhereShouldDecrypt) {
+                System.out.println(" - "  + element.getTagName() + " (" + element.getAttribute("id") + ")");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return result;
-    }
-
-    /**
-     * Build JSON by:
-     *  - "attributes" object for the tag's attributes.
-     *  - each child stored under the child's tag name.
-     *  - "attributes" must appear first in the order.
-     */
-    private static JSONObject buildJsonFromNode(Node node) {
-        // Use a LinkedHashMap to preserve insertion order: "attributes" first, then children
-        LinkedHashMap<String, Object> jsonMap = new LinkedHashMap<>();
-
-        // Build the "attributes" object
-        JSONObject attrJson = new JSONObject();
-        if (node.hasAttributes()) {
-            NamedNodeMap attributes = node.getAttributes();
-            for (int i = 0; i < attributes.getLength(); i++) {
-                Node attr = attributes.item(i);
-                attrJson.put(attr.getNodeName(), attr.getNodeValue());
-            }
-        }
-        jsonMap.put("attributes", attrJson);
-
-        // Group children by tag name
-        Map<String, JSONArray> childMap = new LinkedHashMap<>();
-        NodeList children = node.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            Node child = children.item(i);
-            if (child.getNodeType() == Node.ELEMENT_NODE) {
-                String childTagName = child.getNodeName();
-                childMap.computeIfAbsent(childTagName, k -> new JSONArray())
-                        .put(buildJsonFromNode(child));
-            }
-        }
-
-        // Place each child array into the JSON map
-        for (Map.Entry<String, JSONArray> entry : childMap.entrySet()) {
-            // If a tag has only one element, put a single object, otherwise put an array
-            jsonMap.put(entry.getKey(),
-                    entry.getValue().length() == 1
-                            ? entry.getValue().getJSONObject(0)
-                            : entry.getValue());
-        }
-
-        // Return as a JSONObject
-        return new JSONObject(jsonMap);
     }
 }
