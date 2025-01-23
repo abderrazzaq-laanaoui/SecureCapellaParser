@@ -6,8 +6,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class CapellaParser {
 
@@ -21,12 +23,13 @@ public class CapellaParser {
             doc.getDocumentElement().normalize();
 
             // TAGS CONTAINING "summary" ATTRIBUTE
-            List<String> SUMMARIES_TO_ENCRYPT =  List.of("create, confidentiality=c1", "create, confidentiality=c2",
-                    "create, confidentiality=c3","confidentiality=c3", "confidentiality=c1, type=fixed, cyph=c1",
-                    "confidentiality=c2, type=fixed, cyph=c1,c2");
-            List<String> SUMMARIES_TO_DECRYPT =  List.of("no_cipher c=lowest", "");
+            Properties properties = new Properties();
+            properties.load(new FileInputStream("values.properties"));
+            String encryptValues = properties.getProperty("ENCRYPT_VALUES");
+            String decryptValues = properties.getProperty("DECRYPT_VALUES");
+            List<String> SUMMARIES_TO_ENCRYPT = List.of(encryptValues.split("\\|"));
+            List<String> SUMMARIES_TO_DECRYPT =  List.of(decryptValues.split("\\|"));
 
-            // for each element in the XML file, if the tag has an attribute summary with the value "toto" or "c1" show the entier tag with all its attributes
             NodeList elements = doc.getElementsByTagName("*");
             List<Element> elementsWhereShouldEncrypt= new ArrayList<>();
             List<Element> elementsWhereShouldDecrypt= new ArrayList<>();
