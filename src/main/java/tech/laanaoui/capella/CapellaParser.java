@@ -11,13 +11,13 @@ import tech.laanaoui.capella.elements.OwnedFunctionalChainInvolvements;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static tech.laanaoui.capella.utils.AppUtils.*;
 
 public class CapellaParser {
-
-
 
     public static void main(String[] args) {
         try {
@@ -119,14 +119,40 @@ public class CapellaParser {
             }
         }
 
+
+        Map<String, StringBuilder> sb = new HashMap<>();
         for (String chain : chains) {
-            System.out.println(chain + " :");
+            sb.put(chain, new StringBuilder());
+            System.out.println("\n"+chain + " :");
             for (OwnedFunctionalChainInvolvements involvement : involvements) {
+                if(involvement.getSummary().contains("ciph")){
+                    //split the value of summary attribute by , and get the value of ciph ex summary="create, confidentiality=C1, ciph:1" => ciph should be true, if ciph is not present then it should be false, if ciph value is 0 then it should be false
+                    String[] summaryArray = involvement.getSummary().split(",");
+                    boolean ciph = false;
+                    for (String s : summaryArray) {
+                        if(s.contains("ciph")){
+                            String[] ciphArray = s.split(":");
+                            if(ciphArray.length > 1){
+                                ciph = ciphArray[1].equals("1");
+                                break;
+                            }
+                        }
+                    }
+                    if (ciph && involvement.getChain().equals(chain)) {
+                        sb.get(chain).append("\nSHOULD CIPHER IN FUNCTION: ").append(involvement.getFunction()).append("\n")
+                                .append("INTEGRITY CHECK: AtRest").append("\n");
+                    }
+                }
                 if (involvement.getChain().equals(chain)) {
                     System.out.println(" - " + involvement);
                 }
             }
-            System.out.println("--------------------\n\n");
+            if(!sb.get(chain).isEmpty()){
+                System.out.println(sb.get(chain));
+            }else {
+                System.out.println("\nNO CIPHER OR INTEGRITY CHECK REQUIRED");
+            }
+            System.out.println("--------------------\n");
         }
     }
 }

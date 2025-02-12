@@ -972,7 +972,7 @@
           <ownedFunctionalChains xsi:type="org.polarsys.capella.core.data.fa:FunctionalChain"
               id="61430ab8-7f39-47c4-ae72-786d132f6ae0" name="Flow 1 -> 2">
             <ownedFunctionalChainInvolvements xsi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementFunction"
-                id="1308c8fe-916a-4a80-9198-7495cffe11bb" summary="create, confidentiality=C1"
+                id="1308c8fe-916a-4a80-9198-7495cffe11bb" summary="create, confidentiality=C1, ciph:1"
                 involved="#a9611eba-4593-4161-ba33-506a7000f92a"/>
             <ownedFunctionalChainInvolvements xsi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementFunction"
                 id="a94faa54-8a67-4488-ae45-b795a440c5bb" summary="InUseR" involved="#7650910e-3dd9-4b3b-a956-778cceac6eea"/>
@@ -1021,7 +1021,7 @@
           <ownedFunctionalChains xsi:type="org.polarsys.capella.core.data.fa:FunctionalChain"
               id="192194e8-b54b-4994-83fb-f0f7b6b14cb8" name="Flow 2 -> 1">
             <ownedFunctionalChainInvolvements xsi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementFunction"
-                id="1f54f4d0-3b6b-45c9-b84c-ed30b99b53d4" summary="create, confidentiality=C2"
+                id="1f54f4d0-3b6b-45c9-b84c-ed30b99b53d4" summary="create, confidentiality=C2, ciph:0"
                 involved="#c086357b-f462-47e3-a134-c537ea5cf3ac"/>
             <ownedFunctionalChainInvolvements xsi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementFunction"
                 id="2d5e0dc3-8d9d-457b-ad41-d3c1a8358597" summary="InUse" involved="#a1f2d7bb-6269-446f-a678-ca1b5eabbe0d"/>
