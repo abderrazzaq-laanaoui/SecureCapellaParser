@@ -33,8 +33,7 @@ public class CapellaParser {
             NodeList elements = doc.getElementsByTagName("*");
             List<Element> elementsWhereShouldEncrypt= new ArrayList<>();
             List<Element> elementsWhereShouldDecrypt= new ArrayList<>();
-
-            for (int i = 0; i < elements.getLength(); i++) {
+             for (int i = 0; i < elements.getLength(); i++) {
                 Element element = (Element) elements.item(i);
                 if (element.hasAttribute("summary")
                         && (SUMMARIES_TO_DECRYPT.contains(element.getAttribute("summary").toLowerCase()))) {

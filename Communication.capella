@@ -1070,7 +1070,7 @@
           <ownedFunctions xsi:type="org.polarsys.capella.core.data.pa:PhysicalFunction"
               id="a9611eba-4593-4161-ba33-506a7000f92a" name="Voice Calling Way 1">
             <outputs xsi:type="org.polarsys.capella.core.data.fa:FunctionOutputPort"
-                id="20c639fa-946e-4ae1-9bce-928a966c5815" name="FOP Voice Calling 1">
+                id="20c639fa-946e-4ae1-9bce-928a966c5815" name="FOP Voice Calling 1" summary="cyph=C1">
               <ownedPortRealizations xsi:type="org.polarsys.capella.core.data.information:PortRealization"
                   id="4fe61328-ee71-40f7-8fe8-6a1592a2accc" targetElement="#9e3bd28a-3ae6-4966-81c2-2a5dc4c36796"
                   sourceElement="#20c639fa-946e-4ae1-9bce-928a966c5815"/>
