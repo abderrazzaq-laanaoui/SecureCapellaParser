@@ -47,22 +47,42 @@ public class CapellaParser {
             List<OwnedFunction> functions = parseOwnedFunctions(rootElement);
             List<OwnedFunctionalChainInvolvements> involvements = parseOwnedFunctionalChainInvolvements(rootElement);
 
-            // replace the function id in the involvements with the function name
-            for (OwnedFunctionalChainInvolvements involvement : involvements) {
-                for (OwnedFunction function : functions) {
-                    if (function.id().equals(involvement.getFunction())) {
-                        // if function name is empty use null
-                        involvement.setFunction(function.name().isEmpty() ? null : function.name());
-                    }
-                }
-            }
+            linkInvolvementsToFunctions(involvements, functions);
 
+            removeEmptyInvolvements(involvements);
             printChains(involvements);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    private static void removeEmptyInvolvements(List<OwnedFunctionalChainInvolvements> involvements) {
+        List<OwnedFunctionalChainInvolvements> toRemove = new ArrayList<>();
+        for (OwnedFunctionalChainInvolvements involvement : involvements) {
+            if (involvement.getFunction() == null) {
+                toRemove.add(involvement);
+            }
+        }
+        involvements.removeAll(toRemove);
+    }
+
+
+    private static void linkInvolvementsToFunctions(List<OwnedFunctionalChainInvolvements> involvements, List<OwnedFunction> functions) {
+    for (OwnedFunctionalChainInvolvements involvement : involvements) {
+        boolean functionFound = false;
+        for (OwnedFunction function : functions) {
+            if (function.id().equals(involvement.getFunction())) {
+                involvement.setFunction(function.name().isEmpty() ? null : function.name());
+                functionFound = true;
+                break;
+            }
+        }
+        if (!functionFound) {
+            involvement.setFunction(null);
+        }
+    }
+}
 
     private static List<OwnedFunction> parseOwnedFunctions(Element rootElement) {
         List<OwnedFunction> functions = new ArrayList<>();
